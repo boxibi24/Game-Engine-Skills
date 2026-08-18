@@ -24,22 +24,33 @@ guidance is mostly about the traps rather than the happy path.
 
 ## Install
 
-As a plugin, from an interactive `claude` terminal:
+**As a plugin (preferred).** From an interactive `claude` terminal:
 
 ```
 /plugin marketplace add C:\Users\ASUS\claude-plugins\unreal-perf
 /plugin install unreal-perf@unreal-perf
 ```
 
-Or install the skills directly to the user-level skills directory, which makes
-them global across every project without registering a marketplace:
+This is the only install route that can be switched off again. `/plugin` then
+toggles all four skills together, and disabling it removes their descriptions
+from context entirely. Skills are roughly 670 tokens of always-resident
+metadata, which is worth reclaiming in projects that are not Unreal.
+
+**As user-level skills (fallback).** If the marketplace route does not work:
 
 ```powershell
-.\install.ps1
+.\install.ps1              # copies skills to ~/.claude/skills
+.\install.ps1 -Uninstall   # removes them again
 ```
 
-Re-run `install.ps1` after editing anything under `plugins/unreal-perf/skills/`
-to sync the copies.
+Be aware this scope has **no off switch** — user-level skills load in every
+session on every project. `-WhatIf` previews either direction.
+
+For a middle ground, copy `plugins/unreal-perf/skills/*` into a single
+project's `.claude/skills/` so they load only there.
+
+Re-run whichever install you used after editing anything under
+`plugins/unreal-perf/skills/`.
 
 ## Requirements
 
