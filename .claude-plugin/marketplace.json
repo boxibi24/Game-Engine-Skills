@@ -13,10 +13,7 @@
         "name": "Tu Nguyen"
       },
       "category": "development",
-      "source": {
-        "source": "directory",
-        "path": "plugins/unreal-perf"
-      }
+      "source": "./plugins/unreal-perf"
     }
   ]
 }
