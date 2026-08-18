@@ -107,7 +107,9 @@ $lines  = @()
 $lines += 'Per-pair visual difference (sampled luminance, 0-255)'
 $lines += '======================================================'
 $lines += ''
-$lines += ('{0,-22} {1,>7} {2,>10} {3,>10} {4,>8}' -f 'camera', 'diff', 'before', 'after', 'delta')
+# .NET composite formatting right-aligns on a positive alignment value; there is
+# no '>' specifier and including one throws at runtime.
+$lines += ('{0,-22} {1,7} {2,10} {3,10} {4,8}' -f 'camera', 'diff', 'before', 'after', 'delta')
 foreach ($r in $sorted) {
     $lines += ('{0,-22} {1,7:N2} {2,10:N1} {3,10:N1} {4,8:N1}' -f $r.camera, $r.diff, $r.beforeLum, $r.afterLum, $r.delta)
 }
@@ -123,7 +125,9 @@ $lines += 'A large mean difference with a consistently negative delta means the'
 $lines += 'change is darkening the scene across the board rather than altering'
 $lines += 'one effect - typically the signature of removing GI bounce or'
 $lines += 'reflections. Inspect the highest-diff pairs first.'
-$lines -join "`r`n" | Set-Content $report -Encoding UTF8
+# Set-Content -Encoding UTF8 writes a BOM in PS 5.1, which shows up as stray
+# characters at the head of the file in most viewers and diff tools.
+[System.IO.File]::WriteAllText($report, ($lines -join "`r`n"), (New-Object System.Text.UTF8Encoding($false)))
 
 $sorted | Select-Object -First 10 | Format-Table -AutoSize | Out-String | Write-Host
 Write-Host ("  mean difference : {0:N2} / 255" -f $avg) -ForegroundColor Cyan
