@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "unreal-perf",
+  "description": "Unreal Engine performance tooling: reproducible stat baselines, bottleneck analysis, and automated commit-pinned before/after screenshot comparison.",
+  "owner": {
+    "name": "Tu Nguyen"
+  },
+  "plugins": [
+    {
+      "name": "unreal-perf",
+      "description": "Profile an Unreal Engine project, find what is actually costing frame time, propose ranked optimizations, and prove the visual result with automated before/after screenshots captured from pinned git commits.",
+      "author": {
+        "name": "Tu Nguyen"
+      },
+      "category": "development",
+      "source": {
+        "source": "directory",
+        "path": "plugins/unreal-perf"
+      }
+    }
+  ]
+}

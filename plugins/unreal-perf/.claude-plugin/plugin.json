@@ -1,0 +1,8 @@
+{
+  "name": "unreal-perf",
+  "version": "1.0.0",
+  "description": "Unreal Engine performance workflow: capture stat baselines, diagnose bottlenecks, propose ranked optimizations, and validate them with automated before/after screenshot comparison driven from git history.",
+  "author": {
+    "name": "Tu Nguyen"
+  }
+}
