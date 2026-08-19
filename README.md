@@ -24,7 +24,7 @@ where you would look for them.
 From an interactive `claude` terminal:
 
 ```
-/plugin marketplace add C:\Users\ASUS\claude-plugins
+/plugin marketplace add boxibi24/Game-Engine-Skills
 ```
 
 Then install whichever you want:
@@ -33,6 +33,18 @@ Then install whichever you want:
 /plugin install unreal@gamedev
 /plugin install unity@gamedev
 ```
+
+The same thing without the interactive panel, e.g. over SSH or in a script:
+
+```bash
+claude plugin marketplace add boxibi24/Game-Engine-Skills
+claude plugin install unreal@gamedev
+```
+
+**If you are editing skills**, point the marketplace at a local clone instead —
+`claude plugin marketplace add /path/to/Game-Engine-Skills` — so changes are one
+`claude plugin update` away rather than a commit-push-pull round trip. Both
+sources cannot be registered at once; they collide on the marketplace name.
 
 `/plugin` toggles each one off again, which removes its skill descriptions from
 context entirely. That is the whole reason these are plugins rather than
@@ -92,6 +104,6 @@ Stated per skill in each plugin's README rather than assumed plugin-wide.
 Broadly: the bundled runners are Windows/PowerShell 5.1+, `unreal` was developed
 against UE 5.6, and `unity` tracks two pre-1.0 components that move.
 
-## Backup
+---
 
-This repo has no remote. It exists only on this disk.
+<https://github.com/boxibi24/Game-Engine-Skills>

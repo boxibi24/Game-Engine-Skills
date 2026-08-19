@@ -30,7 +30,7 @@ today. New skills drop into `skills/` without renaming or re-scoping anything.
 ## Install
 
 ```
-/plugin marketplace add C:\Users\ASUS\claude-plugins
+/plugin marketplace add boxibi24/Game-Engine-Skills
 /plugin install unreal@gamedev
 ```
 

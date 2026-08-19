@@ -44,7 +44,7 @@ Per-project `.mcp.json`. Pin `--project-path` so it can't bind to the wrong Edit
   "mcpServers": {
     "unity": {
       "type": "stdio",
-      "command": "C:\\Users\\ASUS\\AppData\\Local\\Unity\\bin\\unity.exe",
+      "command": "C:\\Users\\<you>\\AppData\\Local\\Unity\\bin\\unity.exe",
       "args": ["mcp", "--project-path", "<ABSOLUTE_PROJECT_PATH>"]
     }
   }

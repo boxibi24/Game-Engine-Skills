@@ -1,6 +1,6 @@
 # Unity CLI command surface
 
-Binary: `C:\Users\ASUS\AppData\Local\Unity\bin\unity.exe` (on PATH as `unity`). Version `1.0.0-beta.3`.
+Binary: `%LOCALAPPDATA%\Unity\bin\unity.exe` (on PATH as `unity`). Version `1.0.0-beta.3`.
 
 ## Global flags
 
