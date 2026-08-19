@@ -1,72 +1,89 @@
-# unreal-perf
+# gamedev
 
-Claude Code plugin for Unreal Engine performance work: capture a trustworthy
-stat baseline, find what is actually costing frame time, propose ranked
-optimizations, and prove the visual result with automated before/after
-screenshots captured from pinned git commits.
+A Claude Code plugin marketplace for game engine tooling. Two plugins, installed
+and toggled independently, so an Unreal project does not carry Unity's notes and
+vice versa.
 
-Built out of a real optimization pass on a UE 5.6 competitive shooter, so the
-guidance is mostly about the traps rather than the happy path.
+| Plugin | Skills | What it covers |
+|---|---|---|
+| [`unreal`](plugins/unreal) | 4 | Stat baselines, bottleneck diagnosis, ranked optimizations, automated before/after screenshot comparison |
+| [`unity`](plugins/unity) | 2 | Driving a project through the Unity CLI and the `com.unity.pipeline` Editor bridge, and keeping those notes current |
 
-## Skills
-
-| Skill | Use it for |
-|---|---|
-| `ue-perf-baseline` | Capturing a measurement that can actually be reproduced and compared. Includes frame-cap detection, which is the step people skip. |
-| `ue-perf-analyze` | Working out which thread is the bottleneck and mapping stat rows to causes, with a settings reference. |
-| `ue-perf-shots` | Automated before/after screenshot capture across two commits, plus a quantitative difference report. |
-| `ue-editor-automation` | The harness: running Python inside UnrealEditor headlessly, and every failure mode that does not announce itself. |
-
-## Commands
-
-- `/ue-perf` — full workflow: baseline, diagnosis, ranked proposals
-- `/ue-shots` — before/after screenshot capture and comparison
+Both are written out of real work rather than from the docs, so the emphasis is
+on the traps — the failure modes that return exit code 0, the caps that are not
+where you would look for them.
 
 ## Install
 
-**As a plugin (preferred).** From an interactive `claude` terminal:
+From an interactive `claude` terminal:
 
 ```
-/plugin marketplace add C:\Users\ASUS\claude-plugins\unreal-perf
-/plugin install unreal-perf@unreal-perf
+/plugin marketplace add C:\Users\ASUS\claude-plugins
 ```
 
-This is the only install route that can be switched off again. `/plugin` then
-toggles all four skills together, and disabling it removes their descriptions
-from context entirely. Skills are roughly 670 tokens of always-resident
-metadata, which is worth reclaiming in projects that are not Unreal.
+Then install whichever you want:
 
-**As user-level skills (fallback).** If the marketplace route does not work:
+```
+/plugin install unreal@gamedev
+/plugin install unity@gamedev
+```
+
+`/plugin` toggles each one off again, which removes its skill descriptions from
+context entirely. That is the whole reason these are plugins rather than
+user-level skills: skills under `~/.claude/skills/` load in every session on
+every project with no off switch, at roughly 170 tokens of always-resident
+metadata each.
+
+**Fallback**, if the marketplace route does not work:
 
 ```powershell
-.\install.ps1              # copies skills to ~/.claude/skills
-.\install.ps1 -Uninstall   # removes them again
+.\install.ps1 unreal              # copy that plugin's skills to ~/.claude/skills
+.\install.ps1 unity -Uninstall    # take them out again
+.\install.ps1                     # both plugins
 ```
 
-Be aware this scope has **no off switch** — user-level skills load in every
-session on every project. `-WhatIf` previews either direction.
+Same caveat: that scope has no off switch. `-WhatIf` previews either direction.
+For a middle ground, copy a plugin's `skills/*` into one project's
+`.claude/skills/` so they load only there.
 
-For a middle ground, copy `plugins/unreal-perf/skills/*` into a single
-project's `.claude/skills/` so they load only there.
+## Layout
 
-Re-run whichever install you used after editing anything under
-`plugins/unreal-perf/skills/`.
+```
+.claude-plugin/marketplace.json    both plugins registered here
+plugins/
+  unreal/
+    .claude-plugin/plugin.json
+    commands/                      /ue-perf, /ue-shots
+    skills/<skill>/SKILL.md
+                  /references/     background the skill pulls in on demand
+                  /scripts/        PowerShell + Python runners
+  unity/
+    .claude-plugin/plugin.json
+    skills/<skill>/SKILL.md
+                  /references/
+```
+
+## Adding a skill
+
+1. `mkdir plugins/<plugin>/skills/<skill-name>` and write `SKILL.md` with
+   `name` and `description` frontmatter. The description is the only part
+   resident in context — it has to say *when to reach for this*, not just what
+   it is, or the skill never fires.
+2. Bulk goes in `references/` and is read on demand. Runnable things go in
+   `scripts/`.
+3. Commit, then `/plugin update <plugin>@gamedev`.
+
+No marketplace edit is needed — skills are discovered from the plugin directory.
+`marketplace.json` only changes when a whole plugin is added.
 
 ## Requirements
 
-- Windows, PowerShell 5.1+
-- Unreal Engine 5.x (developed against 5.6)
-- The project is a git repository
-- `PythonScriptPlugin` — enabled per-run via `-EnablePlugins`, no project change needed
+- Windows, PowerShell 5.1+ (the bundled runners; the written guidance is
+  platform-independent)
+- `unreal`: Unreal Engine 5.x, developed against 5.6, target project is a git
+  repo
+- `unity`: the `unity` CLI and `com.unity.pipeline`, both pre-1.0 and moving
 
-Engine and project paths are discovered from the `.uproject` and the registry,
-so the scripts are not tied to a particular install location or project.
+## Backup
 
-## Scope
-
-The bundled scripts are Windows/PowerShell. The knowledge in the skills applies
-to any platform; only the runners would need porting.
-
-Screenshot capture drives the editor viewport, which means it reflects editor
-rendering. That is the right tool for comparing how a change affects the look.
-It is not a substitute for measuring frame cost in a packaged build.
+This repo has no remote. Four commits of it exist only on this disk.

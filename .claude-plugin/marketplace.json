@@ -1,19 +1,28 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "unreal-perf",
-  "description": "Unreal Engine performance tooling: reproducible stat baselines, bottleneck analysis, and automated commit-pinned before/after screenshot comparison.",
+  "name": "gamedev",
+  "description": "Game engine tooling for Claude Code: driving the Unreal and Unity editors from the outside, and the failure modes that do not announce themselves.",
   "owner": {
     "name": "Tu Nguyen"
   },
   "plugins": [
     {
-      "name": "unreal-perf",
-      "description": "Profile an Unreal Engine project, find what is actually costing frame time, propose ranked optimizations, and prove the visual result with automated before/after screenshots captured from pinned git commits.",
+      "name": "unreal",
+      "description": "Unreal Engine workflow: reproducible stat baselines, bottleneck diagnosis, ranked optimization proposals, and automated before/after screenshot comparison captured from pinned git commits.",
       "author": {
         "name": "Tu Nguyen"
       },
       "category": "development",
-      "source": "./plugins/unreal-perf"
+      "source": "./plugins/unreal"
+    },
+    {
+      "name": "unity",
+      "description": "Unity workflow: driving a project through the Unity CLI and the com.unity.pipeline Editor bridge over MCP or a shell, plus keeping those notes current as both pre-1.0 halves shift under you.",
+      "author": {
+        "name": "Tu Nguyen"
+      },
+      "category": "development",
+      "source": "./plugins/unity"
     }
   ]
 }

@@ -1,0 +1,8 @@
+{
+  "name": "unity",
+  "version": "1.0.0",
+  "description": "Unity workflow: drive a project from the shell or over MCP through the Unity CLI and the com.unity.pipeline Editor bridge, and refresh the tool surface when the pre-1.0 halves move under you.",
+  "author": {
+    "name": "Tu Nguyen"
+  }
+}
