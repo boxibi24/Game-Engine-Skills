@@ -1,15 +1,15 @@
 # unity
 
-Driving a Unity project from outside the Editor: the `unity` CLI, the
-`com.unity.pipeline` Editor bridge, and the MCP server that wraps it. Reading
-and mutating scenes, prefabs, components, materials, lighting and NavMesh;
-running tests; triggering builds; reading the console; managing packages.
+Unity tooling for Claude Code.
 
-Both halves are pre-1.0 — the CLI is `beta`, Pipeline is `-exp` — so the notes
-carry a recorded baseline and a routine for refreshing it when the tool surface
-moves.
+The plugin is scoped to the **engine**, not to a topic. It holds whatever Unity
+skills turn out to be worth keeping; driving the Editor from outside it is
+simply what is in it today. New skills drop into `skills/` without renaming or
+re-scoping anything.
 
 ## Skills
+
+### Editor control
 
 | Skill | Use it for |
 |---|---|
@@ -23,10 +23,13 @@ moves.
 /plugin install unity@gamedev
 ```
 
-See the [marketplace README](../../README.md) for the fallback install and the
-reasoning behind the plugin scope.
+See the [marketplace README](../../README.md) for the fallback install, the
+reasoning behind the plugin scope, and how to add a skill.
 
 ## Requirements
+
+Per skill, not plugin-wide — a new skill here is under no obligation to need any
+of this. For the two editor-control skills:
 
 - The `unity` CLI on `PATH` (baseline: `1.0.0-beta.3`)
 - `com.unity.pipeline` installed in the project (baseline: `0.4.0-exp.1`), and
@@ -39,8 +42,8 @@ reasoning behind the plugin scope.
 ## Keeping it current
 
 `skills/unity-cli/references/baseline.json` records the versions, tool count and
-tool list that these notes were verified against. When a documented tool is
-missing or rejects its parameters, that is the signal to run `unity-cli-update`.
+tool list those notes were verified against. When a documented tool is missing
+or rejects its parameters, that is the signal to run `unity-cli-update`.
 
 Findings get written back **here**, in this repo — not into the installed copy
 under `~/.claude/plugins/cache/`, which is replaced on every plugin update.

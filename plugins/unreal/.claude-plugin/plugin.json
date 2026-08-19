@@ -1,7 +1,7 @@
 {
   "name": "unreal",
-  "version": "1.0.0",
-  "description": "Unreal Engine workflow: capture stat baselines, diagnose bottlenecks, propose ranked optimizations, and validate them with automated before/after screenshot comparison driven from git history.",
+  "version": "1.1.0",
+  "description": "Unreal Engine tooling. Skills for driving the editor from outside it and for performance work: reproducible stat baselines, bottleneck diagnosis, ranked optimizations, and automated before/after screenshot comparison captured from pinned git commits.",
   "author": {
     "name": "Tu Nguyen"
   }

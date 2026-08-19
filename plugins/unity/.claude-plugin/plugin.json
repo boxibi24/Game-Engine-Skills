@@ -1,7 +1,7 @@
 {
   "name": "unity",
   "version": "1.0.0",
-  "description": "Unity workflow: drive a project from the shell or over MCP through the Unity CLI and the com.unity.pipeline Editor bridge, and refresh the tool surface when the pre-1.0 halves move under you.",
+  "description": "Unity tooling. Skills for driving a project through the Unity CLI and the com.unity.pipeline Editor bridge, over MCP or a shell, and for keeping those notes current as both pre-1.0 halves shift underneath them.",
   "author": {
     "name": "Tu Nguyen"
   }

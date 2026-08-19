@@ -1,14 +1,14 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "gamedev",
-  "description": "Game engine tooling for Claude Code: driving the Unreal and Unity editors from the outside, and the failure modes that do not announce themselves.",
+  "description": "Game engine tooling for Claude Code. One plugin per engine, each a container for whatever skills that engine accumulates.",
   "owner": {
     "name": "Tu Nguyen"
   },
   "plugins": [
     {
       "name": "unreal",
-      "description": "Unreal Engine workflow: reproducible stat baselines, bottleneck diagnosis, ranked optimization proposals, and automated before/after screenshot comparison captured from pinned git commits.",
+      "description": "Unreal Engine tooling. Skills for driving the editor from outside it and for performance work: reproducible stat baselines, bottleneck diagnosis, ranked optimizations, and automated before/after screenshot comparison captured from pinned git commits.",
       "author": {
         "name": "Tu Nguyen"
       },
@@ -17,7 +17,7 @@
     },
     {
       "name": "unity",
-      "description": "Unity workflow: driving a project through the Unity CLI and the com.unity.pipeline Editor bridge over MCP or a shell, plus keeping those notes current as both pre-1.0 halves shift under you.",
+      "description": "Unity tooling. Skills for driving a project through the Unity CLI and the com.unity.pipeline Editor bridge, over MCP or a shell, and for keeping those notes current as both pre-1.0 halves shift underneath them.",
       "author": {
         "name": "Tu Nguyen"
       },
