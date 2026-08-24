@@ -1,6 +1,6 @@
-# Pipeline tool catalog (com.unity.pipeline 0.4.0-exp.1)
+# Pipeline tool catalog (com.unity.pipeline 0.5.0-exp.1)
 
-140 tools, verified 2026-07-28. Regenerate with `unity list --json`.
+142 tools, verified 2026-08-24. Regenerate with `unity list --json`.
 
 Conventions seen across the set:
 
@@ -211,13 +211,13 @@ Conventions seen across the set:
 
 ## Play/Editor (12)
 
-- `capture_game_view` — Render a camera to a PNG. Returns it inline as base64, unless save_path is set (path-only result; pass include_inline_image=true to get both).
-  - optional: `width`, `height`, `camera`, `save_path`, `include_inline_image`, `max_resolution`
+- `capture_game_view` — Render the game view to a PNG. source=camera (default) renders a camera and misses Screen Space - Overlay UI; source=screen captures the composited backbuffer incl. overlay canvases (Play Mode only). Returns it inline as base64, unless save_path is set (path-only result; pass include_inline_image=true to get both).
+  - optional: `width`, `height`, `camera`, `save_path`, `include_inline_image`, `max_resolution`, `source`
 - `clear_console` — Clear the captured log buffer and the Unity Editor console.
 - `console` — Get captured Unity console output (Editor or Player; supports tail, level filtering, and follow via a cursor)
   - optional: `tail`, `level`, `since`
 - `editor_focus` — Bring the Unity Editor window to the foreground
-- `editor_pause` — Pause Unity Editor play mode
+- `editor_pause` — Toggle pause state of Unity Editor play mode
 - `editor_play` — Enter Unity Editor play mode
 - `editor_status` — Get detailed Unity Editor status and state information
 - `editor_stop` — Exit Unity Editor play mode
@@ -228,10 +228,13 @@ Conventions seen across the set:
 - `screenshot` — Capture the Scene or Game view as a PNG and return its file path
   - optional: `view`, `output`, `width`, `height`
 - `set_autotick` — Keep the editor ticking while unfocused by forcing EditorApplication.SignalTick at a throttled rate
-  - optional: `enable`, `interval_ms`
+  - optional: `enable`, `interval_ms`, `persist`
 
-## Build/Test (12)
+## Build/Test (14)
 
+- `audit` — Run a Project Auditor static-analysis scan. Returns immediately; poll audit_status until status is 'completed', then read the CSV.
+  - optional: `categories`, `output`
+- `audit_status` — Get the status of the last audit: idle | scanning | completed | failed | interrupted | unavailable.
 - `build` — Trigger an async Player build and report the full BuildReport. Returns immediately (queued); poll build_status until status is 'completed'. DetailedBuildReport is included by default unless 'options' is supplied. Use dry_run to validate without building.
   - optional: `target`, `outputPath`, `profileName`, `options`, `scenes`, `confirm`, `dry_run`
 - `build_status` — Status of the current/most recent build: idle | queued | building | completed, with the full BuildReport (files, packedAssets, buildSteps, errors, warnings) once completed. Retained until the next build.

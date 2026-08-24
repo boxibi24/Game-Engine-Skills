@@ -10,7 +10,7 @@ Three things, two of which are the same thing wearing different clothes.
 | Piece | What it is | Needs Editor running? |
 |---|---|---|
 | `unity` CLI | Standalone binary. Hub/editor/project management, builds, tests. | No |
-| `com.unity.pipeline` | UPM package. Runs an HTTP server *inside* the Editor exposing 140 typed tools. | Yes |
+| `com.unity.pipeline` | UPM package. Runs an HTTP server *inside* the Editor exposing 142 typed tools. | Yes |
 | `unity mcp` | Wraps the Pipeline server as an MCP stdio server. | Yes |
 
 `unity mcp` and `unity cmd` are two front doors onto the **same** Pipeline server. Same tools, same semantics. MCP is for agents; `unity cmd` is for shells and CI.
@@ -51,7 +51,7 @@ Per-project `.mcp.json`. Pin `--project-path` so it can't bind to the wrong Edit
 }
 ```
 
-Requires a session restart. Cost: 140 tool schemas in context. If that's too heavy for a session, skip MCP and shell out to `unity cmd <tool> --flag value` — identical capability, zero standing context.
+Requires a session restart. Cost: 142 tool schemas in context. If that's too heavy for a session, skip MCP and shell out to `unity cmd <tool> --flag value` — identical capability, zero standing context.
 
 ## Working loops
 
@@ -77,15 +77,19 @@ Scene edits leave the scene **dirty but unsaved**. Either call `save_scene` or t
 
 ## Reference files
 
-- `references/pipeline-tools.md` — all 140 tools by domain, with parameters
+- `references/pipeline-tools.md` — all 142 tools by domain, with parameters
 - `references/cli-commands.md` — the `unity` command surface, build/test/CI flags
 - `references/gotchas.md` — Windows path mangling, `eval` syntax, batch-mode limits
 
-## Baseline (verified 2026-07-30)
+## Baseline (verified 2026-08-24)
 
-Unity CLI `1.0.0-beta.3` · `com.unity.pipeline` `0.4.0-exp.1` · Editor `6000.3.13f1` · **140 tools**
+Unity CLI `1.0.0-beta.6` · `com.unity.pipeline` `0.5.0-exp.1` · Editor `6000.0.74f1` · **142 tools**
 
-Verified end to end over MCP stdio, not just by listing tools: `initialize` → `tools/list` (140) → `tools/call editor_status` → `tools/call get_scene_hierarchy` → destructive call correctly refused. Also verified the full write loop via `unity cmd`: `create_folder` → `create_script` → `recompile` → poll `recompile_status` → `eval_file` confirming `typeLoaded=True` → `delete_asset` cleanup.
+Verified end to end over MCP stdio on the 2026-07-30 pass, not just by listing tools: `initialize` → `tools/list` → `tools/call editor_status` → `tools/call get_scene_hierarchy` → destructive call correctly refused. Also verified the full write loop via `unity cmd`: `create_folder` → `create_script` → `recompile` → poll `recompile_status` → `eval_file` confirming `typeLoaded=True` → `delete_asset` cleanup.
+
+The 2026-08-24 pass re-verified over `unity cmd` only (`editor_status`, `get_authoring_root`, `recompile_status`, `unity list` → 142) on Unity `6000.0.74f1`, i.e. a **6000.0 LTS** editor rather than 6000.3 — `0.5.0-exp.1` resolves and runs there. The MCP stdio path was not re-exercised on this pass.
+
+Delta since 0.4.0-exp.1: **+2 tools** (`audit`, `audit_status` — Project Auditor static analysis, async), **0 removed**, **0 renamed**, and two tools gained optional parameters (`capture_game_view` → `source`, `set_autotick` → `persist`). No breaking parameter changes.
 
 Both the CLI (beta) and Pipeline (experimental) move fast and break compatibility. If tool names or parameters here don't match reality, trust `unity list --json` and run the `unity-cli-update` skill to refresh these notes.
 

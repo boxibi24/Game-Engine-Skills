@@ -43,11 +43,20 @@ Returns a typed `result` plus a `diagnostics` array. Roslyn-backed, ~0.5–1s. U
 
 `unity pipeline install` edits `Packages/manifest.json` and returns immediately. A running Editor only imports on focus, so `unity status` stays empty and you will think the install failed.
 
-Force it: `unity cmd package_resolve` (if any Pipeline server is already up), or click into the Editor. Then poll `unity cmd recompile_status` until `completed`. Budget ~60s for import plus domain reload. `unity pipeline list` is the honest progress indicator — watch `Server Port` and `Server Reachable` populate.
+Force it: `unity cmd package_resolve` (if any Pipeline server is already up), or click into the Editor. Then poll `unity cmd recompile_status` until `completed`. `unity pipeline list` is the honest progress indicator — watch `Server Port` and `Server Reachable` populate.
+
+**On a first install there is no server yet, so `package_resolve` cannot bootstrap itself** — it fails with `No Unity Editor instances found with reachable Pipeline servers`, and the `editor_focus` tool is useless for the same reason. Something outside the Editor has to give it focus. On Windows, without touching the mouse:
+
+```powershell
+Add-Type '... user32 SetForegroundWindow / ShowWindow ...'
+$p = Get-Process Unity; [W]::SetForegroundWindow($p.MainWindowHandle)
+```
+
+Budget more than the ~60s often quoted: on a large project (Unity 6000.0.74f1, ~40 packages) the server took **90s** to report `Server Reachable: true` after focus. Poll, don't guess.
 
 ## Zero tools means no tool source, not a broken server
 
-`unity mcp` will handshake happily and report `unity-mcp v1.0.0-beta.3` while exposing **0 tools**. That is not an MCP failure — Pipeline isn't installed or reachable. Diagnose with `unity pipeline list`, never by reinstalling the CLI.
+`unity mcp` will handshake happily and report its own version (e.g. `unity-mcp v1.0.0-beta.6`) while exposing **0 tools**. That is not an MCP failure — Pipeline isn't installed or reachable. Diagnose with `unity pipeline list`, never by reinstalling the CLI.
 
 ## `unity build` needs your own build method
 
@@ -64,7 +73,9 @@ Command-line arguments win over env vars. Always pin in `.mcp.json`.
 
 ## Async tools return immediately
 
-`package_add`, `package_remove`, `build`, `run_tests`, `bake_*`, `switch_build_target` return `in_progress`. Poll the matching `*_status` tool. Some accept `wait=true` to block instead — simpler when you have nothing else to do.
+`package_add`, `package_remove`, `build`, `run_tests`, `audit`, `bake_*`, `switch_build_target` return `in_progress`. Poll the matching `*_status` tool. Some accept `wait=true` to block instead — simpler when you have nothing else to do.
+
+Separately, the CLI gained `unity job status|wait|cancel <job-id>` in beta.6 for *detached Editor command jobs* — a different mechanism from these in-Editor async tools, and not a way to poll them.
 
 ## Scripts do not exist until recompile finishes
 
@@ -98,8 +109,25 @@ Asset deletion of scripts kicks off another compile and domain reload. Poll `rec
 
 ## `unity mcp configure claude-code` does nothing useful
 
-It is registered as `(no file — delegation/manual)`. Write `.mcp.json` yourself. The other 15 clients (Cursor, Codex, Copilot, Claude Desktop, VS Code, …) do get written.
+It is registered as `(no file — delegation/manual)`. Write `.mcp.json` yourself. As of beta.6 the list has 17 entries, four of them delegation/manual (`claude-code`, `trae`, `openclaw`, `inspect`); the other 13 (Cursor, Codex, Copilot, Claude Desktop, VS Code, …) do get written.
+
+Not to be confused with `unity skill install claude-code` (new in beta.6), which *does* write something: the CLI's own bundled agent skill, into `~/.claude/skills/unity-cli/`. Same `unity-cli` name as this skill, so installing it shadows or collides with this one. It has nothing to do with MCP config.
+
+## `audit` is exposed even when Project Auditor is missing
+
+New in `0.5.0-exp.1`. `audit` / `audit_status` appear in `unity list` unconditionally, but on an Editor without the Project Auditor package `audit_status` returns
+
+```json
+{"status":"unavailable","message":"Project Auditor is not installed in this Editor (Unity.ProjectAuditor.Editor.ProjectAuditor not found)."}
+```
+
+Presence in the tool list is not proof a tool can run. Install `com.unity.project-auditor` first; `unavailable` is one of the documented `audit_status` states (`idle | scanning | completed | failed | interrupted | unavailable`), not an error.
 
 ## Unrelated third-party `unityMCP` servers
 
-Several editors may carry a `unityMCP` entry pointing at `http://127.0.0.1:8080/mcp` with state in `~/.unity-mcp/`, `%LOCALAPPDATA%\UnityMCP`, `%APPDATA%\UnityMCP`. That is a **different, third-party** Unity MCP project, unrelated to `unity mcp`/Pipeline. Don't confuse the two when debugging, and don't delete one thinking it's the other.
+Several editors may carry a `unityMCP` entry with state in `~/.unity-mcp/`, `%LOCALAPPDATA%\UnityMCP`, `%APPDATA%\UnityMCP`. That is a **different, third-party** Unity MCP project — CoplayDev's `com.coplaydev.unity-mcp` (`github.com/CoplayDev/unity-mcp`) — unrelated to `unity mcp`/Pipeline. Don't confuse the two when debugging, and don't delete one thinking it's the other.
+
+Observed on a project running both (2026-08-24): CoplayDev's Editor bridge is a **raw TCP** listener on **6400** that answers a plain `ping` with `WELCOME UNITY-MCP 1 FRAMING=1`, and writes `unity-mcp-status-*.json` / `unity-mcp-port-*.json` discovery files into `~/.unity-mcp/`. Pipeline's server is HTTP on a *different* port (7800 there). **They coexist fine** — installing Pipeline did not disturb it. Two tells for which one you are looking at:
+
+- CoplayDev's Python server runs via `uvx mcp-for-unity`, logs to `%LOCALAPPDATA%\UnityMCP\Logs\unity_mcp_server.log`, and needs a separate `claude mcp add` registration — which, unlike `unity cmd`, only takes effect after a session restart.
+- Those stale `unity-mcp-port*.json` files can point at a long-dead port from an unrelated project; they are not evidence about the project in front of you. Trust `unity pipeline list` for Pipeline, and the `unity-mcp-status-*.json` whose `project_path` matches for CoplayDev.
