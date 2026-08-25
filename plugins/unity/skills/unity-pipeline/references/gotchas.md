@@ -1,6 +1,11 @@
 # Gotchas
 
-Each of these cost real debugging time. They are not in Unity's docs.
+Each of these cost real debugging time. They are **not** in Unity's own `unity-cli` skill —
+that skill documents the CLI's intended surface; this file documents where reality diverges
+from it, and how the Pipeline bridge behaves once an Editor is actually connected.
+
+Where an entry contradicts Unity's documentation, it says so explicitly and gives the
+observation date, so the next reader can re-check rather than guess which is right.
 
 ## Git Bash rewrites hierarchy paths (Windows)
 
@@ -58,10 +63,6 @@ Budget more than the ~60s often quoted: on a large project (Unity 6000.0.74f1, ~
 
 `unity mcp` will handshake happily and report its own version (e.g. `unity-mcp v1.0.0-beta.6`) while exposing **0 tools**. That is not an MCP failure — Pipeline isn't installed or reachable. Diagnose with `unity pipeline list`, never by reinstalling the CLI.
 
-## `unity build` needs your own build method
-
-`--execute-method` is required. Unity has no built-in command-line build entry point, so you must ship a static C# method. `--output-path` is passed through as `-buildOutput` but nothing honours it unless your method reads it.
-
 ## Targeting the right Editor
 
 With several Editors open, the MCP server binds to the *first discovered* instance. Pin it:
@@ -107,11 +108,23 @@ Asset deletion of scripts kicks off another compile and domain reload. Poll `rec
 
 `unity mcp` prints "Connect via Claude Desktop, Cursor, VS Code, or the MCP Inspector" on startup. Claude Code's absence is just an incomplete client list, matching the `(no file — delegation/manual)` entry in `unity mcp configure --list`. The stdio transport is standard JSON-RPC and works fine — confirmed by a full `initialize` → `tools/list` → `tools/call` round trip. Don't treat the banner as an incompatibility.
 
-## `unity mcp configure claude-code` does nothing useful
+## `mcp configure` — the client list differs from Unity's docs
 
-It is registered as `(no file — delegation/manual)`. Write `.mcp.json` yourself. As of beta.6 the list has 17 entries, four of them delegation/manual (`claude-code`, `trae`, `openclaw`, `inspect`); the other 13 (Cursor, Codex, Copilot, Claude Desktop, VS Code, …) do get written.
+Unity's `unity-cli` skill (`references/integration-advanced.md`) states **16 clients** and lists them.
+Observed on `1.0.0-beta.6`, 2026-08-24: `unity mcp configure --list` returns **17** — the list also
+includes `kimi`, which Unity's text omits.
 
-Not to be confused with `unity skill install claude-code` (new in beta.6), which *does* write something: the CLI's own bundled agent skill, into `~/.claude/skills/unity-cli/`. Same `unity-cli` name as this skill, so installing it shadows or collides with this one. It has nothing to do with MCP config.
+More importantly, four of those 17 are `(no file — delegation/manual)` and write nothing:
+`claude-code`, `trae`, `openclaw`, `inspect`. The other 13 do get written.
+
+**`claude-code` being one of the four is the trap**: it is listed as supported, so it looks like
+`unity mcp configure claude-code` will register the server, and it does not. Write `.mcp.json`
+by hand — see the parent SKILL.md.
+
+Not to be confused with `unity skill install claude-code`, which *does* write something: Unity's
+own CLI documentation, as a skill, into `~/.claude/skills/unity-cli/`. That is the skill this one
+defers to for CLI-general questions, and it is why this skill is named `unity-pipeline` rather than
+`unity-cli` — installing Unity's would otherwise collide with it.
 
 ## `audit` is exposed even when Project Auditor is missing
 

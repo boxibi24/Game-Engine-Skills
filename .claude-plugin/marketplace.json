@@ -17,7 +17,7 @@
     },
     {
       "name": "unity",
-      "description": "Unity tooling. Skills for driving a project through the Unity CLI and the com.unity.pipeline Editor bridge, over MCP or a shell, and for keeping those notes current as both pre-1.0 halves shift underneath them.",
+      "description": "Unity tooling. Skills for driving a live Editor through the com.unity.pipeline bridge — its typed tool catalog, the field failures that are not in anyone's docs, and a verified baseline — plus keeping all of it current as the CLI, the package and Unity's own official skills shift underneath it. Complements Unity-Technologies/skills rather than duplicating it.",
       "author": {
         "name": "Tu Nguyen"
       },
